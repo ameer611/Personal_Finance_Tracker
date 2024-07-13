@@ -33,7 +33,7 @@ INSTALLED_APPS = [
 
     # local apps
     'finance_app',
-
+    'user_app',
 
 
 ]
