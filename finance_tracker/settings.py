@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # third-party apps
     'rest_framework',
     'corsheaders',
+    'django_extensions',
 
     # local apps
     'finance_app',
@@ -138,7 +139,6 @@ STATIC_ROOT = BASE_DIR / '/staticfiles/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user_app.User'
-
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
