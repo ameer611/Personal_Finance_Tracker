@@ -29,9 +29,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # third-party apps
+    "drf_yasg",
     'rest_framework',
     'corsheaders',
     'django_extensions',
+    'rest_framework_simplejwt',
 
     # local apps
     'finance_app',
