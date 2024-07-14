@@ -11,10 +11,12 @@ from user_app.serializer import UserSerializer
 
 class RegisterView(APIView):
     def post(self, request):
+        serializer_class = UserSerializer
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
 
 class LoginView(APIView):
     def post(self, request):
