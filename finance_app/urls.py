@@ -20,10 +20,10 @@ schema_view = get_schema_view(
 
 
 transaction_router = DefaultRouter()
-transaction_router.register(r'transactions', TransactionViewSet, basename='transactions')
+transaction_router.register(r'transactions', TransactionViewSet, basename='transaction')
 
 category_router = DefaultRouter()
-category_router.register(r'categories', CategoryViewSet, basename='categories')
+category_router.register(r'categories', CategoryViewSet, basename='category')
 
 urlpatterns = [
     path('transactions/', include(transaction_router.urls)),
