@@ -1,4 +1,4 @@
-from rest_framework import permissions
+from rest_framework import permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -11,9 +11,12 @@ from finance_app.serializers import TransactionSerializer, CategorySerializer
 class TransactionViewSet(ModelViewSet):
     serializer_class = TransactionSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    ordering_fields = ['-amount', 'amount']
+    search_fields = ['title', 'category__name', 'amount', 'description']
 
     def get_queryset(self):
-        queryset = Transaction.objects.filter(user=self.request.user)
+        queryset = Transaction.objects.filter(user=self.request.user).order_by('-created_at')
         return queryset
 
     def perform_create(self, serializer):
