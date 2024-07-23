@@ -7,10 +7,12 @@ from finance_app.serializers import CategorySerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
     class Meta:
         model = Transaction
         fields = (
             'id',
+            'title',
             'amount',
             'description',
             'date',
