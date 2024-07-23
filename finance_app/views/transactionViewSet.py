@@ -33,3 +33,11 @@ class TransactionViewSet(ModelViewSet):
         serializer = TransactionSerializer(filtered_queryset, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=["GET"])
+    def expense(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        income_transactions = queryset.filter(transaction_type=Transaction.EXPENSE)
+        filtered_queryset = self.filter_queryset(income_transactions)
+        serializer = TransactionSerializer(filtered_queryset, many=True)
+        return Response(serializer.data)
+
