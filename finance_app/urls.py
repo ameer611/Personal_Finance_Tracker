@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 from drf_yasg import openapi
 
 from finance_app.views import TransactionViewSet, CategoryViewSet
+from finance_app.views.statisticsViewSet import UserStatisticsView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -25,9 +26,12 @@ transaction_router.register(r'transactions', TransactionViewSet, basename='trans
 category_router = DefaultRouter()
 category_router.register(r'categories', CategoryViewSet, basename='category')
 
+
 urlpatterns = [
     path('transactions/', include(transaction_router.urls)),
     path('categories/', include(category_router.urls)),
+    path('statistics/', UserStatisticsView.as_view(), name='user_statistics'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
 
 ]
