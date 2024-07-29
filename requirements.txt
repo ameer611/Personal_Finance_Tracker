@@ -8,5 +8,6 @@ django-cors-headers~=4.4.0
 django-extensions~=3.2.3
 drf-yasg~=1.21.7
 setuptools~=70.3.0
+matplotlib~=3.9.1
 
 
