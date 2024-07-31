@@ -1,3 +1,2 @@
 from .categoryViewSet import CategoryViewSet
 from .transactionViewSet import TransactionViewSet
-from .statisticsViewSet import UserStatisticsView
