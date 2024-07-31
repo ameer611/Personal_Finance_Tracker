@@ -1,59 +1,84 @@
-import io
-
-import matplotlib.pyplot as plt
-from django.db import models
-from django.http import HttpResponse
-from rest_framework.decorators import action
-from rest_framework.views import APIView
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from finance_app.models import Transaction
 
 
-def get_user_income_expense_data(user):
-    transactions = Transaction.objects.filter(user=user)
-    income = transactions.filter(transaction_type=Transaction.INCOME).aggregate(total_income=models.Sum('amount'))['total_income'] or 0
-    expense = transactions.filter(transaction_type=Transaction.EXPENSE).aggregate(total_expense=models.Sum('amount'))['total_expense'] or 0
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
 
+@api_view(['GET'])
+def get_user_monthly_income_expense_data(request):
+    transactions = Transaction.objects.filter(user=request.user)
+
+    # Aggregate income data by month
+    monthly_income = transactions.filter(transaction_type=Transaction.INCOME).annotate(
+        month=TruncMonth('date')
+    ).values('month').annotate(total_income=Sum('amount')).order_by('month')
+
+    # Aggregate expense data by month
+    monthly_expense = transactions.filter(transaction_type=Transaction.EXPENSE).annotate(
+        month=TruncMonth('date')
+    ).values('month').annotate(total_expense=Sum('amount')).order_by('month')
+
+    # Prepare data in a dictionary format for easy access
     data = {
-        'Income': income,
-        'Expense': expense
+        'Income': list(monthly_income),
+        'Expense': list(monthly_expense)
     }
-    return data
+    return Response(data)
 
-def get_user_category_income_data(user, data_type):
-    transactions = Transaction.objects.filter(user=user, transaction_type=Transaction.data_type)
+
+
+@api_view(['GET'])
+def get_user_monthly_category_income_data(request):
+    # Filter transactions by user and type
+    transactions = Transaction.objects.filter(user=request.user, transaction_type=Transaction.INCOME)
+
+    # Aggregate data by month and category
+    monthly_category_data = transactions.annotate(
+        month=TruncMonth('date')
+    ).values('month', 'category').annotate(total_amount=Sum('amount')).order_by('month', 'category')
+
+    # Convert to a more convenient data structure
     data = {}
-    for transaction in transactions:
-        if transaction.category in data:
-            data[transaction.category] += transaction.amount
-        else:
-            data[transaction.category] = transaction.amount
+    for item in monthly_category_data:
+        month = item['month'].strftime('%Y-%m')
+        category = item['category']
+        amount = item['total_amount']
 
-    return data
+        if month not in data:
+            data[month] = {}
+
+        data[month][category] = amount
+
+    return Response(data)
+
+@api_view(['GET'])
+def get_user_monthly_category_expense_data(request):
+    # Filter transactions by user and type
+    transactions = Transaction.objects.filter(user=request.user, transaction_type=Transaction.EXPENSE)
+
+    # Aggregate data by month and category
+    monthly_category_data = transactions.annotate(
+        month=TruncMonth('date')
+    ).values('month', 'category').annotate(total_amount=Sum('amount')).order_by('month', 'category')
+
+    # Convert to a more convenient data structure
+    data = {}
+    for item in monthly_category_data:
+        month = item['month'].strftime('%Y-%m')
+        category = item['category']
+        amount = item['total_amount']
+
+        if month not in data:
+            data[month] = {}
+
+        data[month][category] = amount
+
+    return Response(data)
 
 
-def generate_statistics_image(data):
-    plt.figure(figsize=(10, 5))
-    plt.pie(data.values(), labels=data.keys(), autopct='%1.1f%%')
-    plt.title('User Data Statistics')
 
-    buffer = io.BytesIO()
-    plt.savefig(buffer, format='png')
-    plt.close()
-    buffer.seek(0)
-    return buffer
-
-
-class UserStatisticsView(APIView):
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        data = get_user_income_expense_data(user)
-
-        buffer = generate_statistics_image(data)
-
-        response = HttpResponse(buffer, content_type='image/png')
-        response['Content-Disposition'] = 'inline; filename="user_statistics.png"'
-        return response
 
 
