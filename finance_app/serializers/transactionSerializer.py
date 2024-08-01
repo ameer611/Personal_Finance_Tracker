@@ -7,7 +7,7 @@ from finance_app.serializers import CategorySerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     class Meta:
         model = Transaction
         fields = (
@@ -30,8 +30,10 @@ class TransactionSerializer(serializers.ModelSerializer):
         return value
 
     def validate_date(self, value):
-        if value < datetime.date(2015, 1, 1):
-            raise serializers.ValidationError('Date must be after 2015-01-01')
+        if value < datetime.date(2000, 1, 1):
+            raise serializers.ValidationError('Date must be after 2000-01-01')
+        elif value > datetime.date(2100, 1, 1):
+            raise serializers.ValidationError('Date must be before 2100-01-01')
         return value
 
     def validate_transaction_type(self, value):
