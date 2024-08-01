@@ -1,5 +1,6 @@
 from rest_framework import permissions, filters
 from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -14,6 +15,7 @@ class TransactionViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     ordering_fields = ['-amount', 'amount']
     search_fields = ['title', 'category__name', 'amount', 'description']
+    pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         queryset = Transaction.objects.filter(user=self.request.user).order_by('-created_at')

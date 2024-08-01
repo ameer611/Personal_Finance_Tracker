@@ -1,3 +1,4 @@
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
@@ -8,6 +9,7 @@ from finance_app.serializers import CategorySerializer
 class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
