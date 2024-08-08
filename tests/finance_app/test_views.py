@@ -88,3 +88,35 @@ class TestTransactionViewSet(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data[0]['title'], 'test title 1')
 
+class TestCategoryViewSet(TestCase):
+    def setUp(self):
+        unique_email = f"test_{uuid.uuid4()}@hi.com"
+        self.user = CustomUser.objects.create(
+            last_name='test last',
+            first_name='test first',
+            email=unique_email,
+            password='1'
+        )
+        refresh = RefreshToken.for_user(self.user)
+        self.token = str(refresh.access_token)
+
+        self.category = Category.objects.create(
+            name='kredit',
+            user=self.user
+        )
+
+        self.salary = Category.objects.create(
+            name='salary',
+            user=self.user
+        )
+
+        self.client = Client()
+        self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {self.token}'
+
+
+    def test_get_all_categories(self):
+        response = self.client.get('/api/categories/categories/')
+        data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(data)
+        self.assertEqual(len(data), 2)
