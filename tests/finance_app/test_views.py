@@ -30,7 +30,7 @@ class TestTransactionViewSet(TestCase):
 
         self.transaction = Transaction.objects.create(
             user=self.user,
-            title='test title',
+            title='test title 1',
             amount=500000,
             date='2020-2-15',
             category=self.salary,
@@ -39,7 +39,7 @@ class TestTransactionViewSet(TestCase):
 
         self.transaction_expense = Transaction.objects.create(
             user=self.user,
-            title='test title',
+            title='test title 2',
             amount=90000,
             date='2019-4-19',
             category=self.category,
@@ -76,7 +76,15 @@ class TestTransactionViewSet(TestCase):
 
 
     def test_get_expenses(self):
-        pass
+        response = self.client.get('/api/transactions/transactions/expense/')
+        data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(data)
 
     def test_search(self):
-        pass
+        response = self.client.get("/api/transactions/transactions/?search=test&ordering=-amount")
+        data = response.json()
+        self.assertEqual(len(data), 2)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data[0]['title'], 'test title 1')
+
