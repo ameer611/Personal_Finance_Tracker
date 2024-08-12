@@ -56,7 +56,7 @@ class TestTransactionViewSet(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(data), 2)
         self.assertIsNotNone(data[0]['id'])
-        self.assertEqual(data[0]['title'], 'test title')
+        self.assertEqual(data[0]['title'], 'test title 1')
 
 
     def test_get_categories(self):
@@ -64,7 +64,7 @@ class TestTransactionViewSet(TestCase):
         response = self.client.get(f'/api/transactions/transactions/{transaction_id}/category/')
         data = response.json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['id'], 2)
+        self.assertEqual(data['id'], 13)
         self.assertEqual(data['name'], 'salary')
 
     def test_get_incomes(self):
@@ -120,3 +120,68 @@ class TestCategoryViewSet(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(data)
         self.assertEqual(len(data), 2)
+
+class TestStatistics(TestCase):
+    def setUp(self):
+        unique_email = f"test_{uuid.uuid4()}@hi.com"
+        self.user = CustomUser.objects.create(
+            last_name='test last',
+            first_name='test first',
+            email=unique_email,
+            password='1'
+        )
+        refresh = RefreshToken.for_user(self.user)
+        self.token = str(refresh.access_token)
+
+        self.category = Category.objects.create(
+            name='kredit',
+            user=self.user
+        )
+
+        self.salary = Category.objects.create(
+            name='salary',
+            user=self.user
+        )
+
+        self.transaction = Transaction.objects.create(
+            user=self.user,
+            title='test title 1',
+            amount=500000,
+            date='2020-2-15',
+            category=self.salary,
+            transaction_type='income'
+        )
+
+        self.transaction_expense = Transaction.objects.create(
+            user=self.user,
+            title='test title 2',
+            amount=90000,
+            date='2020-2-19',
+            category=self.category,
+            transaction_type='expense'
+        )
+
+        self.client = Client()
+        self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {self.token}'
+
+
+    def test_get_monthly_statistics(self):
+        response = self.client.get('/api/statistics/')
+        data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(data['Income'])
+        self.assertIsNotNone(data['Expense'])
+
+
+    def test_get_monthly_income(self):
+        response = self.client.get('/api/statistics/income/')
+        data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(data)
+
+    def test_get_monthly_expense(self):
+        response = self.client.get('/api/statistics/expense/')
+        data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(data)
+
