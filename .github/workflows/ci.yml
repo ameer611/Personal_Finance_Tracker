@@ -11,7 +11,6 @@ jobs:
           POSTGRES_DB: finance_tracker
           POSTGRES_USER: tracker
           POSTGRES_PASSWORD: Ameer$571
-          DB_HOST: db
         ports:
           - 5432:5432
     runs-on: ubuntu-22.04.3
