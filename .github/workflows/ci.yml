@@ -13,7 +13,7 @@ jobs:
           POSTGRES_PASSWORD: Ameer$571
         ports:
           - 5432:5432
-    runs-on: ubuntu-22.04.3
+    runs-on: ubuntu-latest
     env:
       DJANGO_SETTINGS_MODULE: finance_tracker.settings
     steps:
