@@ -1,0 +1,28 @@
+name: Transactions Tracker API
+
+on: [push ]
+
+jobs:
+  run-tests:
+    services:
+      postgres:
+        image: postgres:15.7
+        env:
+          POSTGRES_DB: finance_tracker
+          POSTGRES_USER: tracker
+          POSTGRES_PASSWORD: Ameer$571
+          DB_HOST: db
+        ports:
+          - 5432:5432
+    runs-on: ubuntu-22.04.3
+    env:
+      DJANGO_SETTINGS_MODULE: finance_tracker.settings
+    steps:
+      - uses: action/checkout@v2
+      - uses: action/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest
