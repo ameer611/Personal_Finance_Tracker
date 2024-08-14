@@ -1,30 +1,52 @@
 name: Transactions Tracker API
 
-on: [push ]
+on: [push]
 
 jobs:
-  run-tests:
+  test:
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:15.7
+        ports:
+          - 5432:5432
         env:
           POSTGRES_DB: finance_tracker
           POSTGRES_USER: tracker
           POSTGRES_PASSWORD: Ameer$571
-        ports:
-          - 5432:5432
-    runs-on: ubuntu-latest
-    env:
-      DJANGO_SETTINGS_MODULE: finance_tracker.settings
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.11
-      - name: Install requirements
-        run: pip install -r requirements.txt
-      - name: Migrate
-        run: python3 manage.py makemigrations
-        run: python3 manage.py migrate
-      - name: Run tests
-        run: pytest
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m venv .venv
+        . .venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Set up the database
+      run: |
+        psql -h localhost -U tracker -c "CREATE DATABASE finance_tracker;"
+      env:
+        PGUSER: tracker
+        PGPASSWORD: Ameer$571
+
+    - name: Run migrations
+      run: |
+        . .venv/bin/activate
+        python manage.py migrate
+
+    - name: Run tests
+      run: |
+        . .venv/bin/activate
+        pytest
