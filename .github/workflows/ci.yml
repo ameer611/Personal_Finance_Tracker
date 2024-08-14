@@ -1,52 +1,39 @@
-name: Transactions Tracker API
+name: Test Django App
 
 on: [push]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:15.7
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: finance_tracker
           POSTGRES_USER: tracker
           POSTGRES_PASSWORD: Ameer$571
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          POSTGRES_DB: finance_tracker
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
     - name: Install dependencies
       run: |
-        python -m venv .venv
-        . .venv/bin/activate
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Set up the database
+    - name: Set up database
       run: |
         psql -h localhost -U tracker -c "CREATE DATABASE finance_tracker;"
-      env:
-        PGUSER: tracker
-        PGPASSWORD: Ameer$571
-
-    - name: Run migrations
-      run: |
-        . .venv/bin/activate
-        python manage.py migrate
 
     - name: Run tests
       run: |
-        . .venv/bin/activate
-        pytest
+        python manage.py test

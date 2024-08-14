@@ -111,7 +111,7 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME", 'finance_tracker'),
         "USER": os.environ.get("DB_USER", 'tracker'),
         "PASSWORD": os.environ.get("DB_PASSWORD", 'Ameer$571'),
-        "HOST": os.environ.get("DB_HOST", '127.0.0.1'),
+        "HOST": os.environ.get("DB_HOST", 'localhost'),
         "PORT": "5432",
     }
 }
