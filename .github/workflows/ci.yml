@@ -23,7 +23,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
 
     - name: Install dependencies
       run: |
@@ -35,5 +35,4 @@ jobs:
         psql -h localhost -U tracker -c "CREATE DATABASE finance_tracker;"
 
     - name: Run tests
-      run: |
-        python manage.py test
+      run: pytest
