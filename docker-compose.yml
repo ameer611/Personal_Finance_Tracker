@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_DB=finance_tracker
+      - POSTGRES_USER=tracker
+      - POSTGRES_PASSWORD=Ameer$571
+      - DB_HOST=db
+    ports:
+      - "8000:8000"
+  db:
+    image: postgres:15.7
+    environment:
+      - POSTGRES_DB=finance_tracker
+      - POSTGRES_USER=tracker
+      - POSTGRES_PASSWORD=Ameer$571
+    ports:
+      - "5432:5432"
+    volumes:
+      - .data/db:/var/lib/postgresql/data
