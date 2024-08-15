@@ -9,11 +9,11 @@ jobs:
       postgres:
         image: postgres:15.7
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 1606
-          POSTGRES_DB: postgres
+          POSTGRES_USER: tracker
+          POSTGRES_PASSWORD: Ameer$571
+          POSTGRES_DB: finance_tracker
         ports:
-          - 5432:5432
+          - '5432:5432'
 
     runs-on: ubuntu-latest
     env:
